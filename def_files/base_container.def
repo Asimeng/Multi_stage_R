@@ -1,0 +1,9 @@
+Bootstrap: docker
+From: bitnami/minideb:bullseye
+stage: Dev
+
+%post
+#install R
+  install_packages r-base
+  #install_packages libreadline8
+  #install_packages libblas3

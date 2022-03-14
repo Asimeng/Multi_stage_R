@@ -1,0 +1,18 @@
+Bootstrap: docker
+From: bitnami/minideb:bullseye
+stage: dev
+
+%post
+  install_packages r-base
+
+
+Bootstrap: docker
+From: bitnami/minideb:bullseye
+stage: final
+
+%files from dev
+  /usr/share/R /usr/share/R
+  /usr/bin/R /usr/bin/R
+  /usr/local/lib /usr/local/lib
+  /etc/R /etc/R
+  /usr/lib/R /usr/lib/R

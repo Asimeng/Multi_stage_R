@@ -1,0 +1,39 @@
+
+Bootstrap: docker
+From: bitnami/minideb:bullseye
+stage: Dev 
+
+%post
+#install R 
+  install_packages r-base
+  cd /home
+  ldd /usr/lib/R/bin/exec/R | awk '{print $3}' | grep x86 > liblist
+
+#Archive relevant R files
+  tar -cf R_files.tar /etc/R /usr/bin/R /usr/share/R /usr/lib/R /usr/lib/libR.so \
+  /usr/lib/x86_64-linux-gnu \
+  `ls /usr/lib/x86_64-linux-gnu/libblas.so* /usr/lib/x86_64-linux-gnu/libgomp.so* /usr/lib/x86_64-linux-gnu/libicudata.so* /usr/lib/x86_64-linux-gnu/libicui18n.so* /usr/lib/x86_64-linux-gnu/libicuuc.so* /usr/lib/x86_64-linux-gnu/libpcre2-8.so* /usr/lib/x86_64-linux-gnu/libreadline.so* /usr/lib/x86_64-linux-gnu/libstdc++.so*`
+
+  #Create a blank container (Deploy stage) to copy binary files into
+Bootstrap: docker
+From: bitnami/minideb:bullseye
+stage: Deploy
+
+%files from Dev
+ #copy archived file from Dev stage to root of Deploy stage
+ /home/R_files.tar /
+
+%post
+#untar archive file to root
+  #install_packages -y libblas3
+  #install_packages -y libreadline8
+  cd /
+  tar -xf /R_files.tar
+  rm /etc/ld.so.cache
+  ldconfig -p | grep libblas.so.3
+
+%test
+  ldd /usr/lib/R/bin/exec/R
+  #ls /usr/lib/x86_64-linux-gnu/libblas.so* /usr/lib/x86_64-linux-gnu/libgomp.so* /usr/lib/x86_64-linux-gnu/libicudata.so* /usr/lib/x86_64-linux-gnu/libicui18n.so* /usr/lib/x86_64-linux-gnu/libicuuc.so* /usr/lib/x86_64-linux-gnu/libpcre2-8.so* /usr/lib/x86_64-linux-gnu/libreadline.so* /usr/lib/x86_64-linux-gnu/libstdc++.so*
+
+  R --version

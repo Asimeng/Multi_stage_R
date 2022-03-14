@@ -1,0 +1,40 @@
+
+Bootstrap: docker
+From: bitnami/minideb:bullseye
+stage: Dev 
+
+%files 
+  /home/jesse-build /home
+
+%post
+#install R 
+  install_packages r-base r-base-dev libcurl4-openssl-dev libssl-dev libxml2-dev
+
+  R --slave -e 'install.packages("tidyverse", repos="https://cloud.r-project.org/")'
+
+  cd /home
+
+ 
+#Archive relevant R files
+  tar -cf R_files.tar -T shared_obj_sorted
+
+  #Create a blank container (Deploy stage) to copy binary files into
+Bootstrap: docker
+From: bitnami/minideb:bullseye
+stage: Deploy
+
+%files from Dev
+ #copy archived file from Dev stage to root of Deploy stage
+ /home/R_files.tar /
+
+%post
+#untar archive file to root
+  
+  cd /
+
+  tar -xf R_files.tar
+  
+  ldconfig 
+
+%test
+  R --version

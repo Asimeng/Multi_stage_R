@@ -1,0 +1,10 @@
+Bootstrap: docker
+From: bitnami/minideb:bullseye
+stage: Dev
+
+%files
+  /home/jesse-build/containers/try_containers_new/R_files_v6.tar /
+
+#%post
+#  apt install -y r-base
+#  tar -xf /R_files.tar -C /

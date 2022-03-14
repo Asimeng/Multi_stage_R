@@ -1,0 +1,24 @@
+Bootstrap: docker
+From: bitnami/minideb:bullseye
+stage: Dev
+
+%post
+#install R
+  install_packages r-base r-base-dev libcurl4-openssl-dev libssl-dev libxml2-dev
+  R --slave -e 'install.packages("devtools", repos="https://cloud.r-project.org/")'
+  R --slave -e 'install.packages("tidyverse", repos="https://cloud.r-project.org/")'
+
+ # cd /home
+ # tar -cf R_library.tar /usr/local/lib/R/site-library /usr/lib/R/site-library /usr/lib/R/library
+
+#Bootstrap: docker
+#From: bitnami/minideb:bullseye
+#stage: Deploy
+
+#%files from Dev
+#  /home/R_library.tar /
+
+#%post
+ # install_packages r-base
+ # tar -xf /R_library.tar
+ # rm /R_library.tar

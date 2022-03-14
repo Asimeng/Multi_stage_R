@@ -1,0 +1,26 @@
+
+
+Bootstrap: docker
+From: bitnami/minideb:bullseye
+stage: dev
+
+%files
+
+  #/home/jesse-build/Luminex-pipeline /home
+
+%post
+  install_packages r-base 
+  #r-base-dev libcurl4-openssl-dev libssl-dev libxml2-dev
+
+  #R --slave -e 'install.packages("/home/Luminex-pipeline", repos = NULL, type = "source")'
+  #R --slave -e 'install.packages("devtools", repos="https://cloud.r-project.org/")'
+
+
+#Bootstrap: docker
+#From: bitnami/minideb:bullseye
+#stage: final
+
+#%files from dev
+ # /usr/bin/R /usr/bin/R
+ # /usr/lib /usr/lib
+ # /usr/lib/R /usr/lib/R
